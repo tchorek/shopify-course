@@ -1,0 +1,14 @@
+{
+  "name": "elizabeth_clean",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "shopify theme dev",
+    "tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./assets/application.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.3.3"
+  }
+}
