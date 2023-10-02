@@ -1,0 +1,68 @@
+<section>
+    <div class="max-w-screen-xl px-4 py-8 mx-auto sm:px-6 sm:py-12 lg:px-8">
+        <header>
+            <h2 class="text-xl font-bold text-gray-900 sm:text-3xl">
+                Product Collection
+            </h2>
+            <p class="max-w-md mt-4 text-gray-500">
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Itaque
+                praesentium cumque iure dicta incidunt est ipsam, officia dolor fugit
+                natus?
+            </p>
+        </header>
+        {% paginate blog.articles by section.settings.number_of_blog_posts %}
+            <div class="grid gap-4 mt-8 sm:grid-cols-2 lg:grid-cols-3">
+                {% for article in blog.articles  %}
+                    <article class="overflow-hidden rounded-lg shadow transition hover:shadow-lg">
+                        {% if article.image %}
+                            <a href="{{ article.url  }}">
+                                <img src="{{ article.image | img_url: 'medium' }}" alt="{{ article.image.alt }}" class="h-56 w-full object-cover">
+                            </a>
+                        {% else %}
+                            {{ 'image' | placeholder_svg_tag: 'h-56 w-full object-cover bg-gray-100' }}
+                        {% endif %}
+                    
+                        <div class="bg-white p-4 sm:p-6">
+                            <time datetime="{{ article.published_at | date: "%Y-%m-%d" }}" class="block text-xs text-gray-500">
+                                {{ article.published_at | date: "%Y-%m-%d" }}
+                            </time>
+                        
+                            <a href="{{ article.url  }}">
+                                <h3 class="mt-0.5 text-lg text-gray-900">{{ article.title }}</h3>
+                            </a>
+                        
+                            <p class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500">
+                                {% if article.excerpt.size > 0 %}
+                                    {{ article.excerpt | strip_html | truncatewords: 20 }}
+                                {% else %}
+                                    {{ article.content | strip_html | truncatewords: 20 }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <div class="mx-auto">
+                {% render 'pagination', pagination: paginate %}
+            </div>
+        {% endpaginate %}
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "Blog",
+    "settings": [
+        {
+            "type": "range",
+            "id": "number_of_blog_posts",
+            "step": 1,
+            "min": 1,
+            "max": 6,
+            "label": "Blog posts per page",
+            "default": 3
+        }
+    ]
+}
+{% endschema %}

@@ -1,0 +1,62 @@
+<div class="absolute top-0 left-0 flex flex-col h-screen w-screen bg-white pt-20">
+    <img
+      src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1548&q=80"
+      alt=""
+      class="object-cover w-full h-64"
+    />
+  
+    <div class="flex items-center justify-center flex-1">
+      <div class="max-w-xl px-4 py-8 mx-auto text-center">
+        <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          {{ section.settings.title }}
+        </h1>
+  
+        <p class="mt-4 text-gray-500">
+          {{ section.settings.subtext_title }}
+        </p>
+  
+        {% if section.settings.button_url == blank %}
+          {% assign shop_url = shop.secure_url %}
+        {% else %}
+          {% assign shop_url = section.settings.button_url %}
+        {% endif %}
+        <a
+          href="{{ shop_url }}"
+          class="inline-block px-5 py-3 mt-6 text-sm font-medium text-white bg-indigo-600 rounded hover:bg-indigo-700 focus:outline-none focus:ring"
+        >
+          {{ section.settings.button_label }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+{% schema %}
+{
+    "name": "Template 404",
+    "settings": [
+        {
+            "type": "text",
+            "id": "title",
+            "default": "404",
+            "label": "404 Heading title"
+        },
+        {
+            "type": "text",
+            "id": "subtext_title",
+            "default": "The page that you're looking for  is not found",
+            "label": "404 Subtext title"
+        },
+        {
+            "type": "text",
+            "id": "button_label",
+            "default": "Go Back Home",
+            "label": "Button label"
+        },
+        {
+            "type": "url",
+            "id": "button_url",
+            "label": "Button URL"
+        }
+    ]
+}
+{% endschema %}

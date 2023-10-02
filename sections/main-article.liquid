@@ -1,0 +1,169 @@
+<article>
+    {% for block in section.blocks %}
+        {% case block.type %}
+            {% when 'article_title'%}
+                <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl text-center">{{ article.title }}</h1>
+            {% when 'article_author'%}
+                {% if section.settings.enable_author %}
+                    <p class="mt-1.5 text-sm text-gray-700 text-center">
+                        {{ article.author }}
+                    </p>
+                {% endif %}
+            {% when 'article_published_date'%}
+                {% if section.settings.enable_published_date %}
+                    <p class="text-gray-700 text-center">
+                        Published at: <time datetime="{{ article.published_at | date: "%Y-%m-%d" }}">{{ article.published_at | date: "%Y-%m-%d" }}</time>
+                    </p>
+                {% endif %}
+            {% when 'featured_image'%}
+                {% if article.image != blank %}
+                    <img src="{{ article.image | img_url: 'large' }}" alt="{{ article.image.alt }}" class="my-6 h-[350px] w-full object-cover sm:h-[450px]">
+                {% else %}
+                    {% assign placeholder_image = 'lifestyle-1' %}
+                    {{ placeholder_image | placeholder_svg_tag: 'w-full h-80 md:h-96 object-cover object-center my-6'}}
+                {% endif %}
+            {% when 'article_content'%}
+                <div class="flex items-center justify-center"><div class="max-w-7xl prose">{{ article.content }}</div></div>
+            {% else %}
+        {% endcase %}
+    {% endfor %}
+</article>
+
+{% if blog.comments_enabled? %}
+    <div id="comments" class="flex items-center justify-center my-8">
+        {% if article.comments_count > 0 %}
+            <div class="flex-1 items-center justify-center max-w-7xl w-full">
+                <h2 class="text-lg mb-4 font-medium">See what people saying</h2>
+
+                {% paginate article.comments by 5 %}
+                    {% for comment in article.comments %}
+                        <div class="flex-1 border my-4 px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                            <span class="comment-author">{{ comment.author }}</span> <span class="text-xs text-gray-400">{{ comment.created_at | date: format: 'default' }}</span>
+                            <p class="text-sm">{{ comment.content }}</p>
+                        </div>
+                    {% endfor %}
+
+                    <div class="max-w-6xl mx-auto">
+                        {% render 'pagination', pagination: paginate %}
+                    </div>
+                {% endpaginate %}
+                
+            </div>
+        {% else %}
+            <div class="max-w-7xl w-full">
+                There are no comments in this article
+            </div>
+        {% endif %}
+    </div>
+    <div id="comment_form" class="mb-8">
+        {% form 'new_comment', article %}
+            <div class="flex items-center justify-center my-8">
+            <div class="rounded-lg bg-white p-8 shadow-lg lg:col-span-3 lg:p-12 max-w-7xl w-full">
+                {% if form.errors %}
+                    Oh no! Your comment was not posted
+                    <div>
+                        <ul>
+                        {% for error in form.errors %}
+                            <li>{{ form.errors.messages[error] }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% elsif form.posted_successfully? %}
+                    Comment is posted successfully
+                {% endif %}
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label class="sr-only" for="comment_author">Name</label>
+                    <input
+                      class="w-full rounded-lg border-gray-200 p-3 text-sm"
+                      placeholder="Name"
+                      type="text"
+                      id="comment_author"
+                      name="comment[author]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label class="sr-only" for="comment_email">Email</label>
+                    <input
+                      class="w-full rounded-lg border-gray-200 p-3 text-sm"
+                      placeholder="example@com.pl"
+                      type="email"
+                      id="comment_email"
+                      name="comment[email]"
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="sr-only" for="comment_content">Comment</label>
+                  <textarea
+                    class="w-full rounded-lg border-gray-200 p-3 text-sm"
+                    placeholder="Comment"
+                    rows="8"
+                    id="comment_content"
+                    name="comment[body]"
+                    required
+                  ></textarea>
+                </div>
+                <div class="mt-4">
+                  <input
+                    type="submit"
+                    class="inline-block w-full rounded-lg bg-black px-5 py-3 font-medium text-white sm:w-auto cursor-pointer"
+                    value="Post comment" 
+                />
+                </div>
+            </div>
+            </div>
+            </div>
+        {% endform %}
+    </div>
+{% endif%}
+
+{% schema %}
+{
+    "name": "Template Article",
+    "settings": [
+        {
+            "type": "checkbox",
+            "id": "enable_author",
+            "default": true,
+            "label": "Display author name"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_published_date",
+            "default": true,
+            "label": "Display published date"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "article_title",
+            "name": "Title",
+            "limit": 1
+        },
+        {
+            "type": "article_author",
+            "name": "Author",
+            "limit": 1
+        },
+        {
+            "type": "article_published_date",
+            "name": "Published date",
+            "limit": 1
+        },
+        {
+            "type": "featured_image",
+            "name": "Thumbnail",
+            "limit": 1   
+        },
+        {
+            "type": "article_content",
+            "name": "Content",
+            "limit": 1   
+        }
+    ]
+}
+{% endschema %}
